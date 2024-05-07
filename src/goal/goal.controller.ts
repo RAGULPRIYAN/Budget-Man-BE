@@ -20,6 +20,8 @@ export class GoalController {
   ) {
   
     try {
+      let userId = req["user"]["id"];
+      data['createdBy'] =userId
       const result = await this.goalService.createGoal(data);
   
       res.status(HttpStatus.OK).json({
@@ -42,6 +44,8 @@ export class GoalController {
   ) {
     
     try {
+      let userId = req["user"]["id"];
+      data['updatedBy'] =userId
       const result = await this.goalService.updateGoal(id, data);
       res
         .status(HttpStatus.OK)
@@ -62,7 +66,9 @@ export class GoalController {
   ) {
    
     try {
-      const results = await this.goalService.getGoal();
+
+      let userId = req["user"]["id"];
+      const results = await this.goalService.getGoal(userId);
      
       res.status(HttpStatus.OK).json({
         message: "Successfully  get Goals",
@@ -79,7 +85,8 @@ export class GoalController {
   async getGoalId( @Body() body: any, @Res() res: Response,@Param("id") id: number,@Req() req: Request) {
     
     try {
-      const result = await this.goalService.getGoalId(id);
+      let userId = req["user"]["id"];
+      const result = await this.goalService.getGoalId(id,userId);
       res
         .status(HttpStatus.OK)
         .json({ message: " Get Goal Id Successfully ", data: result });

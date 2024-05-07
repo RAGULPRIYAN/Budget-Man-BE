@@ -32,6 +32,8 @@ export class BudgetController {
   ) {
   
     try {
+      let userId = req["user"]["id"];
+      data['createdBy'] =userId
       const result = await this.budgetService.createBudgetAmount(data);
      
       res.status(HttpStatus.OK).json({
@@ -54,6 +56,8 @@ export class BudgetController {
   ) {
   
     try {
+      let userId = req["user"]["id"];
+      data['createdBy'] =userId
       const result = await this.budgetService.createExpenseNames(data);
      
       res.status(HttpStatus.OK).json({
@@ -75,6 +79,8 @@ export class BudgetController {
   ) {
   
     try {
+      let userId = req["user"]["id"];
+      data['createdBy'] =userId
       const result = await this.budgetService.createBudget(data);
      
       res.status(HttpStatus.OK).json({
@@ -98,6 +104,8 @@ export class BudgetController {
   ) {
     
     try {
+      let userId = req["user"]["id"];
+      data['updatedBy'] =userId
       const result = await this.budgetService.updateBudget(id, data);
       res
         .status(HttpStatus.OK)
@@ -137,7 +145,8 @@ export class BudgetController {
   ) {
    
     try {
-      const results = await this.budgetService.expenseCount();
+      let userId = req["user"]["id"];
+      const results = await this.budgetService.expenseCount(userId);
      
       res.status(HttpStatus.OK).json({
         message: "Successfully  get Expense Count",
@@ -154,7 +163,8 @@ export class BudgetController {
   async getAllBudgetAmount(@Res() res: Response, @Req() req: Request){
     // let userId = req['user']['id'];
     try {
-      const results = await this.budgetService.getAllBudgetAmount();
+      let userId = req["user"]["id"];
+      const results = await this.budgetService.getAllBudgetAmount(userId);
       res.status(HttpStatus.OK).json({
         message: "Successfully  Get All Budget Amount",
         data: results,
@@ -170,7 +180,8 @@ export class BudgetController {
   @Get("getAllBudgetName")
   async getAllBudgetName(@Res() res: Response, @Req() req: Request){
     try {
-      const results = await this.budgetService.getAllBudgetName();
+      let userId = req["user"]["id"];
+      const results = await this.budgetService.getAllBudgetName(userId);
     
       res.status(HttpStatus.OK).json({
         message: "Successfully  Get All Budget Name",
@@ -186,7 +197,8 @@ export class BudgetController {
   @Get("getAllBudgets")
   async getAllBudgets(@Res() res: Response, @Req() req: Request){
     try {
-      const results = await this.budgetService.getAllBudgets();
+      let userId = req["user"]["id"];
+      const results = await this.budgetService.getAllBudgets(userId);
     
       res.status(HttpStatus.OK).json({
         message: "Successfully  Get All Budgets",
@@ -204,7 +216,8 @@ export class BudgetController {
   async getAmountId( @Body() body: any, @Res() res: Response,@Param("id") id: number,@Req() req: Request) {
     
     try {
-      const result = await this.budgetService.getBudgetAmountId(id);
+      let userId = req["user"]["id"];
+      const result = await this.budgetService.getBudgetAmountId(id,userId);
       res
         .status(HttpStatus.OK)
         .json({ message: " Get Amount Id Successfully ", data: result });
@@ -219,7 +232,8 @@ export class BudgetController {
   async getExpenseNamesId( @Body() body: any, @Res() res: Response,@Param("id") id: number,@Req() req: Request) {
     
     try {
-      const result = await this.budgetService.getExpenseNameId(id);
+      let userId = req["user"]["id"];
+      const result = await this.budgetService.getExpenseNameId(id,userId);
       res
         .status(HttpStatus.OK)
         .json({ message: " Get getExpenseNamesId Successfully ", data: result });
@@ -234,7 +248,8 @@ export class BudgetController {
   async getRemainingBudgetId( @Body() body: any, @Res() res: Response,@Param("id") id: number,@Req() req: Request) {
     
     try {
-      const result = await this.budgetService.getRemainingBudgetId(id);
+      let userId = req["user"]["id"];
+      const result = await this.budgetService.getRemainingBudgetId(id,userId);
       res
         .status(HttpStatus.OK)
         .json({ message: " Get getRemainingBudgetId Successfully ", data: result });
@@ -249,7 +264,8 @@ export class BudgetController {
   async getBudgetId( @Body() body: any, @Res() res: Response,@Param("id") id: number,@Req() req: Request) {
     
     try {
-      const result = await this.budgetService.getBudgetId(id);
+      let userId = req["user"]["id"];
+      const result = await this.budgetService.getBudgetId(id,userId);
       res
         .status(HttpStatus.OK)
         .json({ message: " Get getBudgetId Successfully ", data: result });
@@ -264,7 +280,8 @@ export class BudgetController {
   async getFilterDateId( @Body() body: any, @Res() res: Response,@Param("id") id: number,@Req() req: Request) {
     
     try {
-      const result = await this.budgetService.getFilterDateWise(id);
+      let userId = req["user"]["id"];
+      const result = await this.budgetService.getFilterDateWise(id,userId);
       res
         .status(HttpStatus.OK)
         .json({ message: " Get getFilterDateId Successfully ", data: result });
@@ -279,7 +296,8 @@ export class BudgetController {
   async getExpenseCountFilterDateId( @Body() body: any, @Res() res: Response,@Param("id") id: number,@Req() req: Request) {
     
     try {
-      const result = await this.budgetService.getExpenseCountToFilterWise(id);
+      let userId = req["user"]["id"];
+      const result = await this.budgetService.getExpenseCountToFilterWise(id,userId);
       res
         .status(HttpStatus.OK)
         .json({ message: " Get getExpenseCountFilterDateId Successfully ", data: result });

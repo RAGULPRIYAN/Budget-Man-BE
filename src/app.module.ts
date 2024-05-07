@@ -12,6 +12,11 @@ import { goal } from './goal/entities/goal.entity';
 import { RemainderModule } from './remainder/remainder.module';
 import { filters, remainder } from './remainder/entities/remainder.entity';
 
+import { APP_GUARD } from "@nestjs/core";
+import { SSOGuard } from "./guards/sso.guard";
+
+
+
 @Module({
   imports: [  ConfigModule.forRoot(),
      TypeOrmModule.forRoot({
@@ -26,6 +31,13 @@ import { filters, remainder } from './remainder/entities/remainder.entity';
     ],
   }),UserModule, BudgetModule, GoalModule, RemainderModule],
   controllers: [AppController],
-  providers: [AppService],
+  providers: [AppService,
+    {
+      provide: APP_GUARD,
+      useClass: SSOGuard,
+      
+    },
+  ],
+ 
 })
 export class AppModule {}

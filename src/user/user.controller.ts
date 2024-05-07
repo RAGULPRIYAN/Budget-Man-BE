@@ -4,6 +4,7 @@ import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { Request, Response } from "express";
 import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
+import { Public } from 'src/isPublic';
 
 @Controller('user')
 @ApiBearerAuth()
@@ -12,6 +13,7 @@ export class UserController {
   constructor(private readonly userService: UserService) {}
 
   @Post('signUp')
+  @Public()
   async signUp(@Body() userData: any, @Res() res: Response) {
     try {
       console.log('inside',userData)
@@ -41,7 +43,7 @@ export class UserController {
 
 
   @Post('login')
- 
+  @Public()
   async login(@Body() loginData: any, @Res() res: Response) {
     try {
       let verfied = await this.userService.login(loginData);
@@ -50,11 +52,10 @@ export class UserController {
         res.status(HttpStatus.OK).json({
           success: true,
           message: verfied.message,
-          // token: verfied.token,
+          token: verfied.token,
           userid: verfied.userid,
           name: verfied.name,
-         
-          // email: loginData.email
+          email: loginData.email
         });
         // await admin.messaging().sendToDevice('', admin.messaging.MessagingPayload);
       } else {

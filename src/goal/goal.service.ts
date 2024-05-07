@@ -18,12 +18,22 @@ export class GoalService {
     return  await this.goalRepository.update(id,data);
   }
 
-  async getGoal(){
-    return  await this.goalRepository.find();
+  async getGoal(userId){
+    let data = await this.goalRepository.createQueryBuilder("g")
+    .select('g.id as id,g.goalName as goalName,g.goalAmount as goalAmount,g.savedAmount as savedAmount,g.targetDate as targetDate')
+    .where({createdBy:userId})
+    .execute()
+   return data
   }
 
-  async getGoalId(id){
-    return  await this.goalRepository.findOne({where:{id}})
+  async getGoalId(id,userId){
+    let data = await this.goalRepository.createQueryBuilder("g")
+    .select('g.id as id,g.goalName as goalName,g.goalAmount as goalAmount,g.savedAmount as savedAmount,g.targetDate as targetDate')
+    .where({id:id})
+    .andWhere({createdBy:userId})
+    .execute()
+   return data
+    
   }
 
   async deleteGoal(id) {

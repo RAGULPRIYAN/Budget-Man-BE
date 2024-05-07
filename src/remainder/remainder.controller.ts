@@ -20,6 +20,8 @@ export class RemainderController {
   ) {
   
     try {
+      let userId = req["user"]["id"];
+      data['createdBy'] =userId
       const result = await this.remainderService.createRemainder(data);
   
       res.status(HttpStatus.OK).json({
@@ -42,6 +44,8 @@ export class RemainderController {
   ) {
     
     try {
+      let userId = req["user"]["id"];
+      data['updatedBy'] =userId
       const result = await this.remainderService.updateRemainder(id, data);
       res
         .status(HttpStatus.OK)
@@ -62,7 +66,8 @@ export class RemainderController {
   ) {
    
     try {
-      const results = await this.remainderService.getRemainder();
+      let userId = req["user"]["id"];
+      const results = await this.remainderService.getRemainder(userId);
      
       res.status(HttpStatus.OK).json({
         message: "Successfully  get Remainder",
@@ -84,6 +89,7 @@ export class RemainderController {
   ) {
    
     try {
+     
       const results = await this.remainderService.getFilter();
      
       res.status(HttpStatus.OK).json({
@@ -101,7 +107,8 @@ export class RemainderController {
   async getRemainderId( @Body() body: any, @Res() res: Response,@Param("id") id: number,@Req() req: Request) {
     
     try {
-      const result = await this.remainderService.getRemainderId(id);
+      let userId = req["user"]["id"];
+      const result = await this.remainderService.getRemainderId(id,userId);
       res
         .status(HttpStatus.OK)
         .json({ message: " Get Remainder Id Successfully ", data: result });
@@ -116,7 +123,8 @@ export class RemainderController {
   async getRemainderWiseBudgetId( @Body() body: any, @Res() res: Response,@Param("id") id: number,@Req() req: Request) {
     
     try {
-      const result = await this.remainderService.getRemainderWiseBudgetId(id);
+      let userId = req["user"]["id"];
+      const result = await this.remainderService.getRemainderWiseBudgetId(id,userId);
       res
         .status(HttpStatus.OK)
         .json({ message: " Get getRemainderWiseBudgetId  Successfully ", data: result });

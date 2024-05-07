@@ -10,9 +10,14 @@ import { JwtService } from '@nestjs/jwt';
 
 @Injectable()
 export class UserService {
-  @InjectRepository(User)
-  private userRepository: Repository<User>;
-  private jwtService: JwtService
+
+  constructor(
+    @InjectRepository(User) 
+    private userRepository: Repository<User>,
+    private readonly jwtService: JwtService
+   
+  ) { }
+ 
 
   async signUp(userData: any) {
     if (!userData.name) {
@@ -47,9 +52,10 @@ export class UserService {
           email: userDataEmail.email,
         };
 
-        // const token = this.jwtService.sign(payload1);
+        const token = this.jwtService.sign(payload1);
+        console.log(token,'token checks')
 
-        // await this.userRepository.update({ id: userDataEmail.id }, { uuidToken: token });
+        await this.userRepository.update({ id: userDataEmail.id }, { uuidToken: token });
 
         return {
           status: true,
@@ -88,10 +94,11 @@ export class UserService {
           email: user.email,
         };
 
-        // let accessToken = this.jwtService.sign(payload);
+        let accessToken = this.jwtService.sign(payload);
+        console.log(accessToken,'accessToken')
         return {
           status: 1,
-          // token: accessToken,
+          token: accessToken,
           message: 'Login Successfully',
           userid: user.id,
           name: user.name,

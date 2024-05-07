@@ -36,45 +36,74 @@ export class BudgetService {
     return  await this.budgetsRepository.update(id,data);
   }
 
-  async getAllBudgetAmount(){
-    return await this.setBudgetAmountRepository.find()
+  async getAllBudgetAmount(userId){
+    let data =await this.setBudgetAmountRepository.createQueryBuilder("ba")
+    .select("ba.id as id,ba.budget as budget")
+    .where({createdBy:userId})
+    .orderBy("ba.createdAt", "DESC")
+    .execute();
+    return data
+    
   }
 
-  async getAllBudgetName(){
-    return await this.expensesRepository.find()
+  async getAllBudgetName(userId){
+    let data =await this.expensesRepository.createQueryBuilder("ba")
+    .select("ba.id as id,ba.expense as expense")
+    .where({createdBy:userId})
+    .orderBy("ba.createdAt", "DESC")
+    .execute();
+    return data
+  
   }
 
-  async getAllBudgets(){
+  async getAllBudgets(userId){
     let data = await this.budgetsRepository.createQueryBuilder("b")
     .leftJoin(setBudgetAmount,"sb","sb.id = b.setAmountId")
     .leftJoin(expenses,"ex","ex.id = b.expenseNameId")
     .select("b.expenseAmount as expenseAmount,b.id as budgetId,sb.budget as budgetAmount,sb.id as budgetAmountId,ex.id as expenseNameId,ex.expense as expenseName,b.createdAt as payDate")
+    .where({createdBy:userId})
+    .orderBy("b.createdAt", "DESC")
     .execute();
     return data
   }
 
 
-  async getBudgetAmountId(id: number) {
-   return await this.setBudgetAmountRepository.findOne({where:{id:id}})
+  async getBudgetAmountId(id: number,userId) {
+    let data =await this.setBudgetAmountRepository.createQueryBuilder("ba")
+    .select("ba.id as id,ba.budget as budget")
+    .where({id:id})
+    .andWhere({createdBy:userId})
+    .orderBy("ba.createdAt", "DESC")
+    .execute();
+    return data
+  //  return await this.setBudgetAmountRepository.findOne({where:{id:id}})
   }
 
-  async getExpenseNameId(id: number) {
-    return await this.expensesRepository.findOne({where:{id:id}})
+  async getExpenseNameId(id: number,userId) {
+    let data =await this.expensesRepository.createQueryBuilder("ba")
+    .select("ba.id as id,ba.expense as expense")
+    .where({id:id})
+    .andWhere({createdBy:userId})
+    .orderBy("b.createdAt", "DESC")
+    .execute();
+    return data
+    // return await this.expensesRepository.findOne({where:{id:id}})
    }
 
-   async getRemainingBudgetId(id: number) {
+   async getRemainingBudgetId(id: number,userId) {
     console.log(id,'id checsk')
     let data = await this.budgetsRepository.createQueryBuilder("b")
     .leftJoin(setBudgetAmount,"sb","sb.id = b.setAmountId")
     .leftJoin(expenses,"ex","ex.id = b.expenseNameId")
     .select("b.createdAt as payDate,b.expenseAmount as expenseAmount,b.id as budgetId,sb.budget as budgetAmount,sb.id as budgetAmountId,ex.id as expenseNameId,ex.expense as expenseName")
     .where("b.setAmountId = :setAmountId", { setAmountId:id })
+    .andWhere("b.createdBy = :createdBy", { createdBy:userId })
     .getRawMany();
     return data
    }
 
 
-   async getFilterDateWise(id:number){
+   async getFilterDateWise(id:number,userId){
     if(id == 1){
       console.log('inside 1')
       let data = await this.budgetsRepository.createQueryBuilder("b")
@@ -83,6 +112,7 @@ export class BudgetService {
       .select("b.createdAt as payDate,b.expenseAmount as expenseAmount,b.id as budgetId,sb.budget as budgetAmount,sb.id as budgetAmountId,ex.id as expenseNameId,ex.expense as expenseName")
       //today data to get
       .where("DATE(b.createdAt) = CURRENT_DATE")
+      .andWhere("b.createdBy = :createdBy", { createdBy:userId })
       .getRawMany();
       return data
     }
@@ -94,6 +124,7 @@ export class BudgetService {
       .select("b.createdAt as payDate,b.expenseAmount as expenseAmount,b.id as budgetId,sb.budget as budgetAmount,sb.id as budgetAmountId,ex.id as expenseNameId,ex.expense as expenseName")
      //today date to get before 7 days data that is weekly
      .where("DATE(b.createdAt) >= DATE_SUB(CURRENT_DATE, INTERVAL 7 DAY)") // Changed logic to get data for the past 7 days
+     .andWhere("b.createdBy = :createdBy", { createdBy:userId })
      .getRawMany();
       return data
     }
@@ -105,17 +136,20 @@ export class BudgetService {
       .select("b.createdAt as payDate,b.expenseAmount as expenseAmount,b.id as budgetId,sb.budget as budgetAmount,sb.id as budgetAmountId,ex.id as expenseNameId,ex.expense as expenseName")
       //today date to get before 30 days data that is monthly
       .where("DATE(b.createdAt) >= DATE_SUB(CURRENT_DATE, INTERVAL 30 DAY)") // Changed logic to get data for the past 30 days
+      .andWhere("b.createdBy = :createdBy", { createdBy:userId })
       .getRawMany();
       return data
     }
    }
 
-  async getBudgetId(id: number) {
+  async getBudgetId(id: number,userId) {
     let data = await this.budgetsRepository.createQueryBuilder("b")
     .leftJoin(setBudgetAmount,"sb","sb.id = b.setAmountId")
     .leftJoin(expenses,"ex","ex.id = b.expenseNameId")
     .select("b.expenseAmount as expenseAmount,b.id as budgetId,sb.budget as budgetAmount,sb.id as budgetAmountId,ex.id as expenseNameId,ex.expense as expenseName")
     .where("b.id = :id", { id:id })
+    .andWhere("b.createdBy = :createdBy", { createdBy:userId })
+    .orderBy("b.createdAt", "DESC")
     .getRawMany();
     return data
    }
@@ -124,10 +158,11 @@ export class BudgetService {
     return await this.budgetsRepository.softDelete(id);
   }
 
-  async expenseCount(){
+  async expenseCount(userId){
     const countData = await this.budgetsRepository.createQueryBuilder("b")
       .leftJoin("expenses","ex","ex.id = b.expenseNameId")
       .select("ex.id as id, ex.expense as expense, COUNT(ex.expense) as itemCount")
+      .where({createdBy:userId})
       .groupBy("ex.id, ex.expense")
       .orderBy("itemCount", "DESC")
       .execute();
@@ -140,12 +175,13 @@ export class BudgetService {
       return { topFive, others,othersTotalCount,totalCount};
   }
 
-  async getExpenseCountToFilterWise(id:number){
+  async getExpenseCountToFilterWise(id:number,userId){
     if(id == 1){
       const countData = await this.budgetsRepository.createQueryBuilder("b")
       .leftJoin("expenses","ex","ex.id = b.expenseNameId")
       .select("ex.id as id, ex.expense as expense, COUNT(ex.expense) as itemCount")
       .where("DATE(b.createdAt) = CURRENT_DATE")
+      .andWhere("b.createdBy = :createdBy", { createdBy:userId })
       .groupBy("ex.id, ex.expense")
       .orderBy("itemCount", "DESC")
       .execute();
@@ -162,6 +198,7 @@ export class BudgetService {
       .leftJoin("expenses","ex","ex.id = b.expenseNameId")
       .select("ex.id as id, ex.expense as expense, COUNT(ex.expense) as itemCount")
       .where("DATE(b.createdAt) >= DATE_SUB(CURRENT_DATE, INTERVAL 7 DAY)") // Changed logic to get data for the past 7 days
+      .andWhere("b.createdBy = :createdBy", { createdBy:userId })
       .groupBy("ex.id, ex.expense")
       .orderBy("itemCount", "DESC")
       .execute();
@@ -178,7 +215,8 @@ export class BudgetService {
       .leftJoin("expenses","ex","ex.id = b.expenseNameId")
       .select("ex.id as id, ex.expense as expense, COUNT(ex.expense) as itemCount")
       .where("DATE(b.createdAt) >= DATE_SUB(CURRENT_DATE, INTERVAL 30 DAY)") // Changed logic to get data for the past 7 days
-      .groupBy("ex.id, ex.expense")
+      .andWhere("b.createdBy = :createdBy", { createdBy:userId })
+      .groupBy("ex.id,ex.expense")
       .orderBy("itemCount", "DESC")
       .execute();
     // return countData;
